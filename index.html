@@ -13,9 +13,7 @@
 <link rel="icon" href="icon-192.png" sizes="192x192" />
 <link rel="apple-touch-icon" href="icon-180.png" />
 <link rel="manifest" href="manifest.json" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="preload" href="fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -70,7 +68,7 @@
       <p class="readout-value"><span id="flour-value">0</span><span class="unit">g</span></p>
     </section>
 
-    <section class="breakdown">
+    <section class="breakdown" aria-live="polite">
       <div class="breakdown-row">
         <span class="ingredient">Water</span>
         <span class="leader" aria-hidden="true"></span>
