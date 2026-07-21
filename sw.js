@@ -1,4 +1,4 @@
-const CACHE = "pizzabollen-v2";
+const CACHE = "pizzabollen-v4";
 
 const ASSETS = [
   "./",

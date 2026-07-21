@@ -116,7 +116,25 @@
         </div>
         <div class="field">
           <label for="cold-room-hours">Uren kamertemp</label>
-          <input id="cold-room-hours" type="number" inputmode="decimal" min="0" step="0.5" value="4" />
+          <input id="cold-room-hours" type="number" inputmode="decimal" min="0" step="0.5" value="2" />
+        </div>
+      </div>
+
+      <div class="field slider-field sched-fields" data-mode="cold" id="fridge-temp-wrap" hidden>
+        <label for="fridge-temp">Koelkasttemperatuur<span class="slider-value" id="fridge-temp-value">4 °C</span></label>
+        <input id="fridge-temp" type="range" min="1" max="10" step="0.5" value="4" />
+        <div class="slider-ends" aria-hidden="true">
+          <span>1 °C · trager</span>
+          <span>10 °C · sneller</span>
+        </div>
+      </div>
+
+      <div class="field slider-field">
+        <label for="strength">Giststerkte<span class="slider-value" id="strength-value">standaard</span></label>
+        <input id="strength" type="range" min="0.5" max="1.6" step="0.05" value="1" />
+        <div class="slider-ends" aria-hidden="true">
+          <span>minder · lange rijs</span>
+          <span>meer · sneller</span>
         </div>
       </div>
 

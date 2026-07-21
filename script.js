@@ -148,7 +148,13 @@ document.getElementById("reset-defaults").addEventListener("click", () => {
 // deegtemperatuur, gistsoort en omgeving.
 const Q10 = 2.3;
 const T_REF = 21;
-const FRIDGE_TEMP = 4;
+// Cold fermentation doesn't follow the same Q10 — yeast activity is very
+// temperature-sensitive near fridge temps — so the fridge branch uses a
+// steeper Q10 anchored at 4 °C = 0.056/hour. Calibrated so 18-24 h at 4 °C
+// lands ~0.45-0.50% instant at default strength (mainstream higher-yeast
+// style); a warmer fridge ferments faster and needs less yeast.
+const FRIDGE_RATE_AT_4 = 0.056;
+const Q10_COLD = 3.5;
 const YEAST_K = 1.5;
 const SCHEDULE_KEY = "pizza-bol-schedule";
 
@@ -158,13 +164,16 @@ let lastIdyPct = 0;
 
 const sched = {
   buttons: document.querySelectorAll(".seg-btn"),
-  roomFields: document.querySelector('.sched-fields[data-mode="room"]'),
-  coldFields: document.querySelector('.sched-fields[data-mode="cold"]'),
+  modeSections: document.querySelectorAll(".sched-fields[data-mode]"),
   roomTemp: document.getElementById("room-temp"),
   roomHours: document.getElementById("room-hours"),
   coldRoomTemp: document.getElementById("cold-room-temp"),
   fridgeHours: document.getElementById("fridge-hours"),
   coldRoomHours: document.getElementById("cold-room-hours"),
+  fridgeTemp: document.getElementById("fridge-temp"),
+  fridgeTempValue: document.getElementById("fridge-temp-value"),
+  strength: document.getElementById("strength"),
+  strengthValue: document.getElementById("strength-value"),
   idyGrams: document.getElementById("sched-idy-g"),
   idyPct: document.getElementById("sched-idy-pct"),
   freshGrams: document.getElementById("sched-fresh-g"),
@@ -173,6 +182,10 @@ const sched = {
 
 function fermentRate(tempC) {
   return Math.pow(Q10, (tempC - T_REF) / 10);
+}
+
+function fridgeRate(tempC) {
+  return FRIDGE_RATE_AT_4 * Math.pow(Q10_COLD, (tempC - 4) / 10);
 }
 
 function formatSmall(grams) {
@@ -192,11 +205,13 @@ function updateSchedule() {
   if (scheduleMethod === "cold") {
     const temp = readNumber(sched.coldRoomTemp, 21);
     const fridgeH = Math.max(0, readNumber(sched.fridgeHours, 24));
-    const roomH = Math.max(0, readNumber(sched.coldRoomHours, 4));
-    equiv = roomH * fermentRate(temp) + fridgeH * fermentRate(FRIDGE_TEMP);
+    const roomH = Math.max(0, readNumber(sched.coldRoomHours, 2));
+    const fridgeT = readNumber(sched.fridgeTemp, 4);
+    equiv = roomH * fermentRate(temp) + fridgeH * fridgeRate(fridgeT);
+    sched.fridgeTempValue.textContent = `${fridgeT.toFixed(fridgeT % 1 ? 1 : 0)} °C`;
     steps = [
       "Meng het deeg en laat het 1–2 u afgedekt op kamertemperatuur staan.",
-      `Bol op en zet het deeg ${Math.round(fridgeH)} u in de koelkast (±4 °C).`,
+      `Bol op en zet het deeg ${Math.round(fridgeH)} u in de koelkast (${fridgeT.toFixed(fridgeT % 1 ? 1 : 0)} °C).`,
       `Haal het ${Math.round(roomH)} u voor het bakken eruit, zodat het op temperatuur (${Math.round(temp)} °C) komt.`,
     ];
   } else {
@@ -215,15 +230,24 @@ function updateSchedule() {
 
   if (!Number.isFinite(equiv) || equiv <= 0) equiv = 6;
 
-  lastIdyPct = YEAST_K / equiv;
+  const strength = readNumber(sched.strength, 1);
+  lastIdyPct = (strength * YEAST_K) / equiv;
   const idyGrams = (currentFlour * lastIdyPct) / 100;
 
+  sched.strengthValue.textContent = strengthLabel(strength);
   sched.idyPct.textContent = `${lastIdyPct.toFixed(2)} %`;
   sched.idyGrams.textContent = formatSmall(idyGrams);
   sched.freshGrams.textContent = formatSmall(idyGrams * 3);
   sched.timeline.innerHTML = steps.map((s) => `<li>${s}</li>`).join("");
 
   saveSchedule();
+}
+
+function strengthLabel(strength) {
+  if (strength <= 0.7) return "minder gist";
+  if (strength >= 1.3) return "meer gist";
+  if (Math.abs(strength - 1) < 0.03) return "standaard";
+  return `×${strength.toFixed(2)}`;
 }
 
 function setMethod(method) {
@@ -233,8 +257,9 @@ function setMethod(method) {
     btn.classList.toggle("is-active", active);
     btn.setAttribute("aria-checked", active ? "true" : "false");
   }
-  sched.roomFields.hidden = method !== "room";
-  sched.coldFields.hidden = method !== "cold";
+  for (const el of sched.modeSections) {
+    el.hidden = el.dataset.mode !== method;
+  }
 }
 
 function saveSchedule() {
@@ -247,6 +272,8 @@ function saveSchedule() {
       coldRoomTemp: sched.coldRoomTemp.value,
       fridgeHours: sched.fridgeHours.value,
       coldRoomHours: sched.coldRoomHours.value,
+      fridgeTemp: sched.fridgeTemp.value,
+      strength: sched.strength.value,
     })
   );
 }
@@ -260,6 +287,8 @@ function loadSchedule() {
     if (s.coldRoomTemp) sched.coldRoomTemp.value = s.coldRoomTemp;
     if (s.fridgeHours) sched.fridgeHours.value = s.fridgeHours;
     if (s.coldRoomHours) sched.coldRoomHours.value = s.coldRoomHours;
+    if (s.fridgeTemp) sched.fridgeTemp.value = s.fridgeTemp;
+    if (s.strength) sched.strength.value = s.strength;
     if (s.method === "cold") setMethod("cold");
   } catch {
     // ignore corrupt storage
@@ -279,6 +308,8 @@ for (const el of [
   sched.coldRoomTemp,
   sched.fridgeHours,
   sched.coldRoomHours,
+  sched.fridgeTemp,
+  sched.strength,
 ]) {
   el.addEventListener("input", updateSchedule);
 }
