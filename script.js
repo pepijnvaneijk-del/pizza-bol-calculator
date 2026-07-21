@@ -78,6 +78,9 @@ function calculate() {
   output.salt.textContent = formatGrams(saltAmount);
   output.yeast.textContent = formatGrams(yeastAmount);
 
+  currentFlour = flour;
+  updateSchedule();
+
   saveValues({
     balls,
     weight,
@@ -139,6 +142,180 @@ document.getElementById("reset-defaults").addEventListener("click", () => {
   calculate();
 });
 
+// ---- Rijsschema (fermentatiebenadering) ----
+// Fermentatiesnelheid t.o.v. 21 °C via een Q10-benadering; gist% × equivalente
+// kamertemp-uren ≈ constante. Bewust een schatting: echte tijd hangt af van
+// deegtemperatuur, gistsoort en omgeving.
+const Q10 = 2.3;
+const T_REF = 21;
+const FRIDGE_TEMP = 4;
+const YEAST_K = 1.5;
+const SCHEDULE_KEY = "pizza-bol-schedule";
+
+let currentFlour = 0;
+let scheduleMethod = "room";
+let lastIdyPct = 0;
+
+const sched = {
+  buttons: document.querySelectorAll(".seg-btn"),
+  roomFields: document.querySelector('.sched-fields[data-mode="room"]'),
+  coldFields: document.querySelector('.sched-fields[data-mode="cold"]'),
+  roomTemp: document.getElementById("room-temp"),
+  roomHours: document.getElementById("room-hours"),
+  coldRoomTemp: document.getElementById("cold-room-temp"),
+  fridgeHours: document.getElementById("fridge-hours"),
+  coldRoomHours: document.getElementById("cold-room-hours"),
+  idyGrams: document.getElementById("sched-idy-g"),
+  idyPct: document.getElementById("sched-idy-pct"),
+  freshGrams: document.getElementById("sched-fresh-g"),
+  timeline: document.getElementById("sched-timeline"),
+};
+
+function fermentRate(tempC) {
+  return Math.pow(Q10, (tempC - T_REF) / 10);
+}
+
+function formatSmall(grams) {
+  if (grams < 1) return `${grams.toFixed(2)} g`;
+  if (grams < 10) return `${grams.toFixed(1)} g`;
+  return `${Math.round(grams)} g`;
+}
+
+function halfHour(value) {
+  return Math.round(value * 2) / 2;
+}
+
+function updateSchedule() {
+  let equiv;
+  let steps;
+
+  if (scheduleMethod === "cold") {
+    const temp = readNumber(sched.coldRoomTemp, 21);
+    const fridgeH = Math.max(0, readNumber(sched.fridgeHours, 24));
+    const roomH = Math.max(0, readNumber(sched.coldRoomHours, 4));
+    equiv = roomH * fermentRate(temp) + fridgeH * fermentRate(FRIDGE_TEMP);
+    steps = [
+      "Meng het deeg en laat het 1–2 u afgedekt op kamertemperatuur staan.",
+      `Bol op en zet het deeg ${Math.round(fridgeH)} u in de koelkast (±4 °C).`,
+      `Haal het ${Math.round(roomH)} u voor het bakken eruit, zodat het op temperatuur (${Math.round(temp)} °C) komt.`,
+    ];
+  } else {
+    const temp = readNumber(sched.roomTemp, 21);
+    const hours = Math.max(0.5, readNumber(sched.roomHours, 6));
+    equiv = hours * fermentRate(temp);
+    const bulk = Math.max(0.5, halfHour(hours * 0.35));
+    const proof = Math.max(0.5, halfHour(hours - bulk));
+    steps = [
+      "Meng het deeg tot een gladde bal.",
+      `Laat ~${bulk} u afgedekt rijzen (bulkrijs) bij ${Math.round(temp)} °C.`,
+      `Bol op en laat ~${proof} u narijzen tot luchtig.`,
+      "Vorm en bak af.",
+    ];
+  }
+
+  if (!Number.isFinite(equiv) || equiv <= 0) equiv = 6;
+
+  lastIdyPct = YEAST_K / equiv;
+  const idyGrams = (currentFlour * lastIdyPct) / 100;
+
+  sched.idyPct.textContent = `${lastIdyPct.toFixed(2)} %`;
+  sched.idyGrams.textContent = formatSmall(idyGrams);
+  sched.freshGrams.textContent = formatSmall(idyGrams * 3);
+  sched.timeline.innerHTML = steps.map((s) => `<li>${s}</li>`).join("");
+
+  saveSchedule();
+}
+
+function setMethod(method) {
+  scheduleMethod = method;
+  for (const btn of sched.buttons) {
+    const active = btn.dataset.method === method;
+    btn.classList.toggle("is-active", active);
+    btn.setAttribute("aria-checked", active ? "true" : "false");
+  }
+  sched.roomFields.hidden = method !== "room";
+  sched.coldFields.hidden = method !== "cold";
+}
+
+function saveSchedule() {
+  localStorage.setItem(
+    SCHEDULE_KEY,
+    JSON.stringify({
+      method: scheduleMethod,
+      roomTemp: sched.roomTemp.value,
+      roomHours: sched.roomHours.value,
+      coldRoomTemp: sched.coldRoomTemp.value,
+      fridgeHours: sched.fridgeHours.value,
+      coldRoomHours: sched.coldRoomHours.value,
+    })
+  );
+}
+
+function loadSchedule() {
+  try {
+    const s = JSON.parse(localStorage.getItem(SCHEDULE_KEY));
+    if (!s) return;
+    if (s.roomTemp) sched.roomTemp.value = s.roomTemp;
+    if (s.roomHours) sched.roomHours.value = s.roomHours;
+    if (s.coldRoomTemp) sched.coldRoomTemp.value = s.coldRoomTemp;
+    if (s.fridgeHours) sched.fridgeHours.value = s.fridgeHours;
+    if (s.coldRoomHours) sched.coldRoomHours.value = s.coldRoomHours;
+    if (s.method === "cold") setMethod("cold");
+  } catch {
+    // ignore corrupt storage
+  }
+}
+
+for (const btn of sched.buttons) {
+  btn.addEventListener("click", () => {
+    setMethod(btn.dataset.method);
+    updateSchedule();
+  });
+}
+
+for (const el of [
+  sched.roomTemp,
+  sched.roomHours,
+  sched.coldRoomTemp,
+  sched.fridgeHours,
+  sched.coldRoomHours,
+]) {
+  el.addEventListener("input", updateSchedule);
+}
+
+document.getElementById("apply-yeast").addEventListener("click", () => {
+  inputs.yeast.value = lastIdyPct.toFixed(2);
+  calculate();
+});
+
+// ---- Gist omrekenen (vers : actief droog : instant ≈ 3 : 1,25 : 1) ----
+const YEAST_FACTORS = { fresh: 3, active: 1.25, instant: 1 };
+const conv = {
+  fresh: document.getElementById("conv-fresh"),
+  active: document.getElementById("conv-active"),
+  instant: document.getElementById("conv-instant"),
+};
+
+function convertYeast(sourceKey) {
+  const value = parseFloat(conv[sourceKey].value);
+  if (!Number.isFinite(value) || value < 0) {
+    for (const key in conv) {
+      if (key !== sourceKey) conv[key].value = "";
+    }
+    return;
+  }
+  const instantEquiv = value / YEAST_FACTORS[sourceKey];
+  for (const key in conv) {
+    if (key === sourceKey) continue;
+    conv[key].value = Math.round(instantEquiv * YEAST_FACTORS[key] * 100) / 100;
+  }
+}
+
+for (const key in conv) {
+  conv[key].addEventListener("input", () => convertYeast(key));
+}
+
+loadSchedule();
 loadSavedValues();
 calculate();
 

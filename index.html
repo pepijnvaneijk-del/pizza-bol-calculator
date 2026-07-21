@@ -87,6 +87,77 @@
     </section>
 
     <details class="advanced">
+      <summary>Rijsschema &amp; gisthoeveelheid</summary>
+
+      <div class="segmented" role="radiogroup" aria-label="Rijsmethode">
+        <button type="button" class="seg-btn is-active" data-method="room" role="radio" aria-checked="true">Kamertemperatuur</button>
+        <button type="button" class="seg-btn" data-method="cold" role="radio" aria-checked="false">Koelkast (koud)</button>
+      </div>
+
+      <div class="fields fields--compact fields--row sched-fields" data-mode="room">
+        <div class="field">
+          <label for="room-temp">Kamertemp. (°C)</label>
+          <input id="room-temp" type="number" inputmode="decimal" min="1" step="1" value="21" />
+        </div>
+        <div class="field">
+          <label for="room-hours">Rijstijd (uren)</label>
+          <input id="room-hours" type="number" inputmode="decimal" min="0.5" step="0.5" value="6" />
+        </div>
+      </div>
+
+      <div class="fields fields--compact fields--row sched-fields" data-mode="cold" hidden>
+        <div class="field">
+          <label for="cold-room-temp">Kamertemp. (°C)</label>
+          <input id="cold-room-temp" type="number" inputmode="decimal" min="1" step="1" value="21" />
+        </div>
+        <div class="field">
+          <label for="fridge-hours">Uren koelkast</label>
+          <input id="fridge-hours" type="number" inputmode="decimal" min="1" step="1" value="24" />
+        </div>
+        <div class="field">
+          <label for="cold-room-hours">Uren kamertemp</label>
+          <input id="cold-room-hours" type="number" inputmode="decimal" min="0" step="0.5" value="4" />
+        </div>
+      </div>
+
+      <div class="breakdown breakdown--nested">
+        <div class="breakdown-row sched-lead">
+          <span class="ingredient">Instant gist</span>
+          <span class="leader" aria-hidden="true"></span>
+          <span class="amount"><span id="sched-idy-g">0 g</span> · <span id="sched-idy-pct">0 %</span></span>
+        </div>
+        <div class="breakdown-row">
+          <span class="ingredient">Verse gist</span>
+          <span class="leader" aria-hidden="true"></span>
+          <span class="amount" id="sched-fresh-g">0 g</span>
+        </div>
+      </div>
+
+      <ol class="timeline" id="sched-timeline"></ol>
+      <button type="button" class="reset-link" id="apply-yeast">Gebruik dit gistpercentage in het recept</button>
+      <p class="note note--muted">Benadering. De echte rijstijd hangt af van deegtemperatuur, gistsoort en omgeving — kijk vooral naar het deeg zelf.</p>
+    </details>
+
+    <details class="advanced">
+      <summary>Gist omrekenen (vers ↔ droog)</summary>
+      <div class="fields fields--compact fields--row fields--three">
+        <div class="field">
+          <label for="conv-fresh">Vers (g)</label>
+          <input id="conv-fresh" type="number" inputmode="decimal" min="0" step="0.1" placeholder="0" />
+        </div>
+        <div class="field">
+          <label for="conv-active">Actief droog (g)</label>
+          <input id="conv-active" type="number" inputmode="decimal" min="0" step="0.1" placeholder="0" />
+        </div>
+        <div class="field">
+          <label for="conv-instant">Instant (g)</label>
+          <input id="conv-instant" type="number" inputmode="decimal" min="0" step="0.1" placeholder="0" />
+        </div>
+      </div>
+      <p class="note note--muted">Verhouding vers : actief droog : instant ≈ 3 : 1,25 : 1.</p>
+    </details>
+
+    <details class="advanced">
       <summary>Ik heb een vaste hoeveelheid bloem</summary>
       <div class="fields fields--compact">
         <div class="field">

@@ -42,6 +42,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html,
 body {
   height: 100%;
@@ -331,6 +335,102 @@ body {
   margin-top: 1rem;
   padding-top: 0.9rem;
   border-top: 1px solid var(--crust-line);
+}
+
+.fields--three {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.fields--three .field {
+  display: flex;
+  flex-direction: column;
+}
+
+.fields--three .field input {
+  margin-top: auto;
+}
+
+.segmented {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 1rem;
+  background: var(--char-deep);
+  border: 1px solid var(--crust-line);
+  border-radius: 0.6rem;
+  overflow: hidden;
+}
+
+.seg-btn {
+  border: none;
+  background: transparent;
+  color: var(--flour-dim);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  padding: 0.55rem 0.5rem;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.seg-btn + .seg-btn {
+  border-left: 1px solid var(--crust-line);
+}
+
+.seg-btn.is-active {
+  background: var(--ember);
+  color: var(--char);
+}
+
+.seg-btn:focus-visible {
+  outline: 2px solid var(--ember-light);
+  outline-offset: -2px;
+}
+
+.sched-fields {
+  margin-top: 0.9rem;
+}
+
+.sched-lead .amount {
+  color: var(--ember-light);
+}
+
+.timeline {
+  list-style: none;
+  counter-reset: step;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.timeline li {
+  position: relative;
+  padding-left: 1.7rem;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: var(--flour-dim);
+}
+
+.timeline li::before {
+  counter-increment: step;
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0.05em;
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 50%;
+  background: rgba(232, 103, 44, 0.18);
+  color: var(--ember-light);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  display: grid;
+  place-items: center;
+}
+
+.note--muted {
+  opacity: 0.85;
+  line-height: 1.4;
 }
 
 .note {
