@@ -1,0 +1,15 @@
+{
+  "name": "Pizzabollen calculator",
+  "short_name": "Pizzabollen",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#1c1512",
+  "theme_color": "#1c1512",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

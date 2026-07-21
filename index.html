@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#1c1512" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Pizzabollen" />
+<title>Pizzabollen — deeg calculator</title>
+<meta name="description" content="Reken snel uit hoeveel bloem, water, zout en gist je nodig hebt voor je pizzabollen." />
+<link rel="icon" href="icon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="icon.svg" />
+<link rel="manifest" href="manifest.json" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="scene">
+  <main class="card">
+    <header class="masthead">
+      <p class="eyebrow">Pizza deeg calculator</p>
+      <h1>Pizzabollen</h1>
+    </header>
+
+    <div class="fields">
+      <div class="field">
+        <label for="balls">Aantal bollen</label>
+        <div class="stepper">
+          <button type="button" class="step-btn" data-target="balls" data-delta="-1" aria-label="Minder bollen">−</button>
+          <input id="balls" type="number" inputmode="numeric" min="1" step="1" value="4" />
+          <button type="button" class="step-btn" data-target="balls" data-delta="1" aria-label="Meer bollen">+</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="weight">Gewicht per bol (g)</label>
+        <div class="stepper">
+          <button type="button" class="step-btn" data-target="weight" data-delta="-10" aria-label="Lichter">−</button>
+          <input id="weight" type="number" inputmode="numeric" min="1" step="1" value="250" />
+          <button type="button" class="step-btn" data-target="weight" data-delta="10" aria-label="Zwaarder">+</button>
+        </div>
+      </div>
+    </div>
+
+    <details class="advanced">
+      <summary>Geavanceerd — bakkerspercentages</summary>
+      <div class="fields fields--compact">
+        <div class="field">
+          <label for="hydration">Hydratatie (%)</label>
+          <input id="hydration" type="number" inputmode="decimal" min="0" step="1" value="62" />
+        </div>
+        <div class="field">
+          <label for="salt">Zout (%)</label>
+          <input id="salt" type="number" inputmode="decimal" min="0" step="0.1" value="2.5" />
+        </div>
+        <div class="field">
+          <label for="yeast">Gedroogde gist (%)</label>
+          <input id="yeast" type="number" inputmode="decimal" min="0" step="0.1" value="0.5" />
+        </div>
+      </div>
+      <button type="button" class="reset-link" id="reset-defaults">Terugzetten naar standaardwaarden</button>
+    </details>
+
+    <section class="readout" aria-live="polite">
+      <p class="readout-label">Totaal deeg</p>
+      <p class="readout-value"><span id="total-value">1000</span><span class="unit">g</span></p>
+    </section>
+
+    <section class="breakdown">
+      <div class="breakdown-row">
+        <span class="ingredient">Bloem</span>
+        <span class="leader" aria-hidden="true"></span>
+        <span class="amount" id="flour-value">0 g</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="ingredient">Water</span>
+        <span class="leader" aria-hidden="true"></span>
+        <span class="amount" id="water-value">0 g</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="ingredient">Zout</span>
+        <span class="leader" aria-hidden="true"></span>
+        <span class="amount" id="salt-value">0 g</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="ingredient">Gist</span>
+        <span class="leader" aria-hidden="true"></span>
+        <span class="amount" id="yeast-value">0 g</span>
+      </div>
+    </section>
+
+    <p class="footnote">Bewaart automatisch je laatste instellingen op dit toestel.</p>
+  </main>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
