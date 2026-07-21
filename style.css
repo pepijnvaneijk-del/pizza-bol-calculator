@@ -294,6 +294,24 @@ body {
   white-space: nowrap;
 }
 
+.breakdown--nested {
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--crust-line);
+}
+
+.note {
+  margin: 0.6rem 0 0;
+  font-size: 0.8rem;
+  color: var(--flour-dim);
+}
+
+.note strong {
+  color: var(--ember-light);
+  font-family: var(--font-mono);
+  font-weight: 500;
+}
+
 .footnote {
   margin: 1.5rem 0 0;
   text-align: center;

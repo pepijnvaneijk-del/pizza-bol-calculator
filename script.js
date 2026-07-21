@@ -17,11 +17,20 @@ const inputs = {
 };
 
 const output = {
-  total: document.getElementById("total-value"),
   flour: document.getElementById("flour-value"),
   water: document.getElementById("water-value"),
   salt: document.getElementById("salt-value"),
   yeast: document.getElementById("yeast-value"),
+};
+
+const flourInput = document.getElementById("flour-input");
+const fromFlourResult = document.getElementById("from-flour-result");
+const fromFlourOutput = {
+  water: document.getElementById("from-flour-water"),
+  salt: document.getElementById("from-flour-salt"),
+  yeast: document.getElementById("from-flour-yeast"),
+  total: document.getElementById("from-flour-total"),
+  balls: document.getElementById("from-flour-balls"),
 };
 
 function loadSavedValues() {
@@ -64,8 +73,7 @@ function calculate() {
   const saltAmount = flour * salt;
   const yeastAmount = flour * yeast;
 
-  output.total.textContent = Math.round(totalDough);
-  output.flour.textContent = formatGrams(flour);
+  output.flour.textContent = Math.round(flour);
   output.water.textContent = formatGrams(water);
   output.salt.textContent = formatGrams(saltAmount);
   output.yeast.textContent = formatGrams(yeastAmount);
@@ -77,11 +85,42 @@ function calculate() {
     salt: salt * 100,
     yeast: yeast * 100,
   });
+
+  calculateFromFlour();
+}
+
+function calculateFromFlour() {
+  const flour = parseFloat(flourInput.value);
+  if (!Number.isFinite(flour) || flour <= 0) {
+    fromFlourResult.hidden = true;
+    return;
+  }
+
+  const hydration = readNumber(inputs.hydration, DEFAULTS.hydration) / 100;
+  const salt = readNumber(inputs.salt, DEFAULTS.salt) / 100;
+  const yeast = readNumber(inputs.yeast, DEFAULTS.yeast) / 100;
+  const weight = Math.max(1, readNumber(inputs.weight, DEFAULTS.weight));
+
+  const water = flour * hydration;
+  const saltAmount = flour * salt;
+  const yeastAmount = flour * yeast;
+  const total = flour + water + saltAmount + yeastAmount;
+  const fullBalls = Math.floor(total / weight);
+  const remainder = Math.round(total - fullBalls * weight);
+
+  fromFlourOutput.water.textContent = formatGrams(water);
+  fromFlourOutput.salt.textContent = formatGrams(saltAmount);
+  fromFlourOutput.yeast.textContent = formatGrams(yeastAmount);
+  fromFlourOutput.total.textContent = formatGrams(total);
+  fromFlourOutput.balls.innerHTML = `Goed voor <strong>${fullBalls} bol${fullBalls === 1 ? "" : "len"}</strong> van ${Math.round(weight)} g${remainder > 0 ? ` (+ ${remainder} g over)` : ""}.`;
+  fromFlourResult.hidden = false;
 }
 
 for (const el of Object.values(inputs)) {
   el.addEventListener("input", calculate);
 }
+
+flourInput.addEventListener("input", calculateFromFlour);
 
 for (const btn of document.querySelectorAll(".step-btn")) {
   btn.addEventListener("click", () => {

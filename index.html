@@ -65,16 +65,11 @@
     </details>
 
     <section class="readout" aria-live="polite">
-      <p class="readout-label">Totaal deeg</p>
-      <p class="readout-value"><span id="total-value">1000</span><span class="unit">g</span></p>
+      <p class="readout-label">Bloem</p>
+      <p class="readout-value"><span id="flour-value">0</span><span class="unit">g</span></p>
     </section>
 
     <section class="breakdown">
-      <div class="breakdown-row">
-        <span class="ingredient">Bloem</span>
-        <span class="leader" aria-hidden="true"></span>
-        <span class="amount" id="flour-value">0 g</span>
-      </div>
       <div class="breakdown-row">
         <span class="ingredient">Water</span>
         <span class="leader" aria-hidden="true"></span>
@@ -91,6 +86,39 @@
         <span class="amount" id="yeast-value">0 g</span>
       </div>
     </section>
+
+    <details class="advanced">
+      <summary>Ik heb een vaste hoeveelheid bloem</summary>
+      <div class="fields fields--compact">
+        <div class="field">
+          <label for="flour-input">Bloem die ik heb (g)</label>
+          <input id="flour-input" type="number" inputmode="numeric" min="0" step="1" placeholder="bijv. 600" />
+        </div>
+      </div>
+      <div class="breakdown breakdown--nested" id="from-flour-result" hidden>
+        <div class="breakdown-row">
+          <span class="ingredient">Water</span>
+          <span class="leader" aria-hidden="true"></span>
+          <span class="amount" id="from-flour-water">0 g</span>
+        </div>
+        <div class="breakdown-row">
+          <span class="ingredient">Zout</span>
+          <span class="leader" aria-hidden="true"></span>
+          <span class="amount" id="from-flour-salt">0 g</span>
+        </div>
+        <div class="breakdown-row">
+          <span class="ingredient">Gist</span>
+          <span class="leader" aria-hidden="true"></span>
+          <span class="amount" id="from-flour-yeast">0 g</span>
+        </div>
+        <div class="breakdown-row">
+          <span class="ingredient">Totaal deeg</span>
+          <span class="leader" aria-hidden="true"></span>
+          <span class="amount" id="from-flour-total">0 g</span>
+        </div>
+        <p class="note" id="from-flour-balls"></p>
+      </div>
+    </details>
 
     <p class="footnote">Bewaart automatisch je laatste instellingen op dit toestel.</p>
   </main>
