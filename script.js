@@ -3,8 +3,8 @@ const STORAGE_KEY = "pizza-bol-calculator";
 const DEFAULTS = {
   balls: 4,
   weight: 250,
-  hydration: 62,
-  salt: 2.5,
+  hydration: 60,
+  salt: 2,
   yeast: 0.5,
 };
 
@@ -166,10 +166,15 @@ const sched = {
   buttons: document.querySelectorAll(".seg-btn"),
   modeSections: document.querySelectorAll(".sched-fields[data-mode]"),
   roomTemp: document.getElementById("room-temp"),
+  roomTempValue: document.getElementById("room-temp-value"),
   roomHours: document.getElementById("room-hours"),
+  roomHoursValue: document.getElementById("room-hours-value"),
   coldRoomTemp: document.getElementById("cold-room-temp"),
+  coldRoomTempValue: document.getElementById("cold-room-temp-value"),
   fridgeHours: document.getElementById("fridge-hours"),
+  fridgeHoursValue: document.getElementById("fridge-hours-value"),
   coldRoomHours: document.getElementById("cold-room-hours"),
+  coldRoomHoursValue: document.getElementById("cold-room-hours-value"),
   fridgeTemp: document.getElementById("fridge-temp"),
   fridgeTempValue: document.getElementById("fridge-temp-value"),
   strength: document.getElementById("strength"),
@@ -198,9 +203,28 @@ function halfHour(value) {
   return Math.round(value * 2) / 2;
 }
 
+function fmtTemp(value) {
+  return `${Number.isInteger(value) ? value : value.toFixed(1)} °C`;
+}
+
+function fmtHours(value) {
+  return `${Number.isInteger(value) ? value : value.toFixed(1)} u`;
+}
+
+function refreshSliderLabels() {
+  sched.roomTempValue.textContent = fmtTemp(readNumber(sched.roomTemp, 21));
+  sched.roomHoursValue.textContent = fmtHours(readNumber(sched.roomHours, 6));
+  sched.coldRoomTempValue.textContent = fmtTemp(readNumber(sched.coldRoomTemp, 21));
+  sched.fridgeHoursValue.textContent = fmtHours(readNumber(sched.fridgeHours, 24));
+  sched.coldRoomHoursValue.textContent = fmtHours(readNumber(sched.coldRoomHours, 2));
+  sched.fridgeTempValue.textContent = fmtTemp(readNumber(sched.fridgeTemp, 4));
+}
+
 function updateSchedule() {
   let equiv;
   let steps;
+
+  refreshSliderLabels();
 
   if (scheduleMethod === "cold") {
     const temp = readNumber(sched.coldRoomTemp, 21);
@@ -208,10 +232,9 @@ function updateSchedule() {
     const roomH = Math.max(0, readNumber(sched.coldRoomHours, 2));
     const fridgeT = readNumber(sched.fridgeTemp, 4);
     equiv = roomH * fermentRate(temp) + fridgeH * fridgeRate(fridgeT);
-    sched.fridgeTempValue.textContent = `${fridgeT.toFixed(fridgeT % 1 ? 1 : 0)} °C`;
     steps = [
       "Meng het deeg en laat het 1–2 u afgedekt op kamertemperatuur staan.",
-      `Bol op en zet het deeg ${Math.round(fridgeH)} u in de koelkast (${fridgeT.toFixed(fridgeT % 1 ? 1 : 0)} °C).`,
+      `Bol op en zet het deeg ${Math.round(fridgeH)} u in de koelkast (${fmtTemp(fridgeT)}).`,
       `Haal het ${Math.round(roomH)} u voor het bakken eruit, zodat het op temperatuur (${Math.round(temp)} °C) komt.`,
     ];
   } else {

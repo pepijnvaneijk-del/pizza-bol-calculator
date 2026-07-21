@@ -49,11 +49,11 @@
       <div class="fields fields--compact">
         <div class="field">
           <label for="hydration">Hydratatie (%)</label>
-          <input id="hydration" type="number" inputmode="decimal" min="0" step="1" value="62" />
+          <input id="hydration" type="number" inputmode="decimal" min="0" step="1" value="60" />
         </div>
         <div class="field">
           <label for="salt">Zout (%)</label>
-          <input id="salt" type="number" inputmode="decimal" min="0" step="0.1" value="2.5" />
+          <input id="salt" type="number" inputmode="decimal" min="0" step="0.1" value="2" />
         </div>
         <div class="field">
           <label for="yeast">Gedroogde gist (%)</label>
@@ -94,30 +94,29 @@
         <button type="button" class="seg-btn" data-method="cold" role="radio" aria-checked="false">Koelkast (koud)</button>
       </div>
 
-      <div class="fields fields--compact fields--row sched-fields" data-mode="room">
-        <div class="field">
-          <label for="room-temp">Kamertemp. (°C)</label>
-          <input id="room-temp" type="number" inputmode="decimal" min="1" step="1" value="21" />
-        </div>
-        <div class="field">
-          <label for="room-hours">Rijstijd (uren)</label>
-          <input id="room-hours" type="number" inputmode="decimal" min="0.5" step="0.5" value="6" />
-        </div>
+      <div class="field slider-field sched-fields" data-mode="room">
+        <label for="room-temp">Kamertemperatuur<span class="slider-value" id="room-temp-value">21 °C</span></label>
+        <input id="room-temp" type="range" min="15" max="30" step="0.5" value="21" />
       </div>
 
-      <div class="fields fields--compact fields--row sched-fields" data-mode="cold" hidden>
-        <div class="field">
-          <label for="cold-room-temp">Kamertemp. (°C)</label>
-          <input id="cold-room-temp" type="number" inputmode="decimal" min="1" step="1" value="21" />
-        </div>
-        <div class="field">
-          <label for="fridge-hours">Uren koelkast</label>
-          <input id="fridge-hours" type="number" inputmode="decimal" min="1" step="1" value="24" />
-        </div>
-        <div class="field">
-          <label for="cold-room-hours">Uren kamertemp</label>
-          <input id="cold-room-hours" type="number" inputmode="decimal" min="0" step="0.5" value="2" />
-        </div>
+      <div class="field slider-field sched-fields" data-mode="room">
+        <label for="room-hours">Rijstijd<span class="slider-value" id="room-hours-value">6 u</span></label>
+        <input id="room-hours" type="range" min="1" max="18" step="0.5" value="6" />
+      </div>
+
+      <div class="field slider-field sched-fields" data-mode="cold" hidden>
+        <label for="cold-room-temp">Kamertemperatuur<span class="slider-value" id="cold-room-temp-value">21 °C</span></label>
+        <input id="cold-room-temp" type="range" min="15" max="30" step="0.5" value="21" />
+      </div>
+
+      <div class="field slider-field sched-fields" data-mode="cold" hidden>
+        <label for="fridge-hours">Uren in koelkast<span class="slider-value" id="fridge-hours-value">24 u</span></label>
+        <input id="fridge-hours" type="range" min="6" max="96" step="1" value="24" />
+      </div>
+
+      <div class="field slider-field sched-fields" data-mode="cold" hidden>
+        <label for="cold-room-hours">Uren op kamertemp<span class="slider-value" id="cold-room-hours-value">2 u</span></label>
+        <input id="cold-room-hours" type="range" min="0" max="8" step="0.5" value="2" />
       </div>
 
       <div class="field slider-field sched-fields" data-mode="cold" id="fridge-temp-wrap" hidden>
